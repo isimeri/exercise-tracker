@@ -16,12 +16,40 @@ app.use(cors());
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: false}));
 app.use('/api/users', userRouter);
-app.use('/api/users/:id/exercises', exerciseRouter);
+// app.use('/api/users/:_id/exercises', exerciseRouter);
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-app.get('/api/users/:id/logs', async (req, res) => {    //implement the query parameters
+app.post('/api/users/:_id/exercises', async (req, res) => {
+    try {
+        const doesUserExist = await userModel.findOne({_id: req.params._id});
+        if(!doesUserExist){
+            return res.json({error: 'user not found'});
+        }
+        const newEx = new exerciseModel({
+            user_id: req.params._id,
+            description: req.body.description,
+            duration: req.body.duration,
+            date: req.body.date ? new Date(req.body.date).toDateString() : new Date().toDateString()
+        });
+
+        await newEx.save();
+        const user = {
+            _id: newEx.user_id,
+            username: doesUserExist.username,
+            date: newEx.date.toDateString(),
+            duration: newEx.duration,
+            description: newEx.description
+        }
+        res.json(user);
+
+    } catch (err) {
+        res.json({error: err.message});
+    }
+});
+
+app.get('/api/users/:id/logs', async (req, res) => {
   const from = req.query.from || new Date(0);
   const to = req.query.to || new Date(Date.now());
   const limit = req.query.limit || 0;
@@ -51,7 +79,7 @@ app.get('/api/users/:id/logs', async (req, res) => {    //implement the query pa
     username: user.username,
     _id: user._id,
     count: exeList.length,
-    logs: mapExeList
+    log: mapExeList
   };
 
   res.json(response);

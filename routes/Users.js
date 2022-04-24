@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     });
     try {
         await user.save();
-        res.json({usename: user.username, _id: user._id});
+        res.json({username: user.username, _id: user._id});
     } catch (err) {
         res.json({error: err.message});
     }
