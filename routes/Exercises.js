@@ -6,7 +6,6 @@ const router = express.Router();
 router.post('/', async (req, res) => {
     try {
         const user = await userModel.findOne({_id: req.body._id});
-        console.log("user goes here ", user);
         if(!user){
             return res.json({error: 'user not found'});
         }
