@@ -1,3 +1,6 @@
+//POST /api/users/:_id/exercises
+//used to happen here, but due to fcc tests being angery,
+//had to move it to server.js
 const express = require('express');
 const exerciseModel = require("../db/exerciseModel.js");
 const userModel = require('../db/userModel.js');
